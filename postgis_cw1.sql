@@ -88,3 +88,6 @@ ST_Area(ST_Union(
             (ST_GeomFromText('POLYGON((4 7, 6 7, 6 8, 4 8, 4 7))')),
             (SELECT geometria FROM buildings WHERE nazwa = 'BuildingC'))))
     )); -- Pole = budynek C + nowy budynek - 2*(część wspólna)
+	
+SELECT * FROM
+ST_Area(ST_SymDifference((SELECT geometria FROM buildings WHERE nazwa = 'BuildingC'), (ST_GeomFromText('POLYGON((4 7, 6 7, 6 8, 4 8, 4 7))'))))
