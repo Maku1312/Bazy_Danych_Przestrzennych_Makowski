@@ -7,13 +7,12 @@ VALUES
                                     CIRCULARSTRING(1 1, 2 0, 3 1),
                                     CIRCULARSTRING(3 1, 4 2, 5 1),
                                     (5 1, 6 1))')),
-    (2, 'obiekt2', ST_GeomFromEWKT('CURVEPOLYGON
-										(COMPOUNDCURVE(
-								        (10 6, 14 6), 
-								        CIRCULARSTRING(14 6, 16 4, 14 2),
-										CIRCULARSTRING(14 2, 12 0, 10 2),
-								        (10 2, 10 6)),
-								  CIRCULARSTRING(11 2,12 3,13 2,12 1,11 2))')),
+    (2, 'obiekt2', ST_GeomFromEWKT('CURVEPOLYGON(COMPOUNDCURVE(
+						(10 6, 14 6), 
+						CIRCULARSTRING(14 6, 16 4, 14 2),
+						CIRCULARSTRING(14 2, 12 0, 10 2),
+						(10 2, 10 6)),
+					CIRCULARSTRING(11 2,12 3,13 2,12 1,11 2))')),
     (3, 'obiekt3', ST_GeomFromText('POLYGON((7 15, 10 17, 12 13, 7 15))')),
     (4, 'obiekt4', ST_GeomFromText('LINESTRING(20 20, 25 25, 27 24, 25 22, 26 21, 22 19, 20.5 19.5)')),
     (5, 'obiekt5', ST_GeomFromText('MULTIPOINT(30 30 59, 38 32 234)')),
