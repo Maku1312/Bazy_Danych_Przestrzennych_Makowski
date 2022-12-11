@@ -1,0 +1,63 @@
+--Zadanie 1 - Pobierz dane o nazwie 1:250 000 Scale Colour Raster™ Free OS OpenData ze strony.
+
+--Zadanie 2 - Załaduj dane do tabeli o nazwie uk_250k
+
+--C:\> cd mypath
+--mypath> raster2pgsql -s 3763 -N -32767 -t 100x100 -I -C -M -d *.tif rasters.uk_250k | psql -d PostGIS_RASTER1 -h localhost -U postgres -p 5432
+
+--Zadanie 3 - Połącz te dane (wszystkie kafle) w mozaikę, a następnie wyeksportuj jako GeoTIFF.
+
+--CREATE TABLE schema_makowski.uk_250k_mos AS
+--SELECT ST_Union(a.rast)
+--FROM rasters.uk_250k AS a;
+
+SELECT ST_AsTiff(rast)
+FROM rasters.uk_250k_mos;
+
+--Zadanie 4 - Pobierz dane o nazwie OS Open Zoomstack ze strony
+
+--Zadanie 5 - Załaduj do bazy danych tabelę reprezentującą granice parków narodowych.
+
+--mypath> raster2pgsql -s 3763 -N -32767 -t 100x100 -I -C -M -d national_park vectors.national_park | psql -d PostGIS_RASTER1 -h localhost -U postgres -p 5432
+
+--Zadanie 6 - Utwórz nową tabelę o nazwie uk_lake_district, do której zaimportujesz mapy rastrowe
+--z punktu 1., które zostaną przycięte do granic parku narodowego Lake District.
+
+CREATE TABLE IF NOT EXISTS rasters.uk_lake_district AS
+SELECT ST_Clip(a.rast, b.geom, true), b.name
+FROM rasters.uk_250k_mos AS a, vectors.national_park AS b
+WHERE ST_Intersects(a.rast, b.geom) AND b.name like 'Lake District';
+
+--Zadanie 7 - Wyeksportuj wyniki do pliku GeoTIFF.
+
+SELECT ST_AsTiff(rast) FROM rasters.uk_lake_district;
+
+--Zadanie 8 - Pobierz dane z satelity Sentinel-2 wykorzystując portal: https://scihub.copernicus.eu
+--Wybierz dowolne zobrazowanie, które pokryje teren parku Lake District oraz gdzie parametr
+--cloud coverage będzie poniżej 20%.
+
+--Zadanie 9 - Załaduj dane z Sentinela-2 do bazy danych.
+
+--mypath> raster2pgsql -s 3763 -N -32767 -t 100x100 -I -C -M -d sentinel2.gpkg rasters.sentinel2 | psql -d PostGIS_RASTER1 -h localhost -U postgres -p 5432
+
+--Zadanie 10 - Policz indeks NDWI oraz przytnij wyniki do granic Lake District.
+
+CREATE TABLE rasters.lake_district_ndvi AS
+WITH r AS (
+	SELECT a.rid, ST_Clip(a.rast, b.geom,true) AS rast
+	FROM rasters.sentinel2 AS a, vectors.national_park AS b
+	WHERE b.name like 'Lake District' AND ST_Intersects(b.geom,a.rast)
+)
+SELECT
+	r.rid,ST_MapAlgebra(
+		r.rast, 1,
+		r.rast, 4,
+		'([rast2.val] - [rast1.val]) / ([rast2.val] + [rast1.val])::float','32BF'
+	) AS rast
+FROM r;
+
+--Zadanie 11 - Wyeksportuj obliczony i przycięty wskaźnik NDWI do GeoTIFF.
+
+
+SELECT ST_AsTiff(ST_Union(rast)) FROM rasters.lake_district_ndvi;
+
