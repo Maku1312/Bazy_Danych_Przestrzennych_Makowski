@@ -1,0 +1,32 @@
+Linki:
+
+Preview only - https://api.mapbox.com/styles/v1/maku1312/cld0hwjd5004415pgux9ccndm.html?title=view&access_token=pk.eyJ1IjoibWFrdTEzMTIiLCJhIjoiY2xkMGY0emdpMWJ0dzNvcDdpZHptejVnZyJ9.kLa28_CIpfaeZPBa190XMQ&zoomwheel=true&fresh=true#12.09/48.99754/8.41665
+Style URL - mapbox://styles/maku1312/cld0hwjd5004415pgux9ccndm
+Access token - pk.eyJ1IjoibWFrdTEzMTIiLCJhIjoiY2xkMGY0emdpMWJ0dzNvcDdpZHptejVnZyJ9.kLa28_CIpfaeZPBa190XMQ
+
+Wykonanie zadania z API:
+
+Pobranie aws i curl
+Generacja tokena z uprawnieniami
+
+Komendy:
+
+curl -X POST "https://api.mapbox.com/uploads/v1/maku1312/credentials?access_token=YOUR_MAPBOX_ACCESS_TOKEN"
+
+setx AWS_ACCESS_KEY_ID {accessKeyId}
+setx AWS_SECRET_ACCESS_KEY {secretAccessKey}
+setx AWS_SESSION_TOKEN {sessionToken}
+
+aws s3 cp T2019_KAR_POI_TABLE s3://{bucket}/{key} --region us-east-1
+
+curl -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" -d "{
+  \"url\": \"http://{bucket}.s3.amazonaws.com/{key}\",
+  \"tileset\": \"maku1312.T2019_POI_TABLE\",
+  \"name\": \"T2019_POI_TABLE\"
+}" https://api.mapbox.com/uploads/v1/maku1312?access_token=YOUR_MAPBOX_ACCESS_TOKEN
+
+
+Dawid Makowski 407894
+
+
+
